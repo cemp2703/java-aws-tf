@@ -1,0 +1,36 @@
+version: '3.4'
+
+services:
+
+  apipersona:
+    #build: ../api-persona/
+    image: cemp2703/java-aws-tp-api_persona
+    environment: 
+      - JAVA_OPTS=""
+      - host=${host}
+      - port=3306
+      - username=root
+      - password=12345678
+      - database=demobd
+    #Si no especifico un puerto host, se creará uno aleatorio
+    network_mode: host
+    restart: on-failure
+    #Sobreescribiendo el entrypoint del dockerfile
+    entrypoint: java -jar /workspace/app.jar
+
+  apipreferencia:
+    #build: ../api-preferencia/
+    image: cemp2703/java-aws-tp-api_preferencia
+    environment: 
+      - JAVA_OPTS=""
+      - host=${host}
+      - port=3306
+      - database=demobd
+      - username=root
+      - password=12345678
+      - url_apipersona=${hostapipersona}
+      - port_apipersona=${portapipersona}
+    network_mode: host
+    restart: on-failure
+    #Sobreescribiendo el entrypoint del dockerfile
+    entrypoint: java -jar /workspace/app.jar
