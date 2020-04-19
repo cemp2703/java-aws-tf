@@ -1,21 +1,21 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { Persona } from 'src/app/_model/persona';
+import { PersonaService } from './../../_service/persona.service';
 import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
-import { PersonaService } from 'src/app/_service/persona.service';
+import { Persona } from './../../_model/persona';
+import { Component, OnInit, ViewChild } from '@angular/core';
 
 @Component({
-  selector: 'app-personas',
-  templateUrl: './personas.component.html',
-  styleUrls: ['./personas.component.css']
+  selector: 'app-encuestas',
+  templateUrl: './encuestas.component.html',
+  styleUrls: ['./encuestas.component.css']
 })
-export class PersonasComponent implements OnInit {
+export class EncuestasComponent implements OnInit {
 
   dataSource : MatTableDataSource<Persona>;
-  displayedColumns = ['id','nombre','edad','sexo'];
+  displayedColumns = ['id','nombre','apellidos','edad','profesion','lugarTrabajo','lenguajeProgramacion'];
   @ViewChild(MatSort,{static : true}) sort : MatSort;
   @ViewChild(MatPaginator,{static : true}) paginator : MatPaginator;
-  
-  title = 'personas';
+
+  title = 'encuestas';
 
   constructor(private personaService : PersonaService) { }
 

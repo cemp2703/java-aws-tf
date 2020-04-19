@@ -5,21 +5,21 @@
             <mat-icon *ngIf="sidenav.opened">close</mat-icon>
         </button>
 
-        <h1 class="example-app-name">Personas / Preferencias</h1>
+        <h1 class="example-app-name">Encuesta preferencia</h1>
 
     </mat-toolbar>
 
     <mat-sidenav-container class="example-sidenav-container">
         <mat-sidenav #sidenav style="width: 200px">
-            <button mat-menu-item (click)="sidenav.toggle()" routerLink="/personas" style="cursor: pointer">
+            <button mat-menu-item (click)="sidenav.toggle()" routerLink="/nueva-encuesta" style="cursor: pointer">
                 <mat-icon>people</mat-icon>
-                <span>Personas</span>
+                <span>Nueva Encuesta</span>
             </button>
             <mat-divider></mat-divider>
-            <button mat-menu-item (click)="sidenav.toggle()" routerLink="/preferencias" style="cursor: pointer">
+            <button mat-menu-item (click)="sidenav.toggle()" routerLink="/encuestas" style="cursor: pointer">
                 <mat-icon>category</mat-icon>
-                <span>Preferencias</span>
-            </button>       
+                <span>Encuestas</span>
+            </button>      
         </mat-sidenav>
         <mat-sidenav-content>
             <router-outlet></router-outlet>

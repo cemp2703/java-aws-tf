@@ -1,10 +1,6 @@
 server:
   port: 8080
 
-url:
-  api:
-    persona: http://${url_apipersona}:${port_apipersona}/api/personas/find/
-
 spring:
   jpa:
     properties:
@@ -12,12 +8,12 @@ spring:
         dialect: org.hibernate.dialect.MySQL5Dialect
     hibernate:
       ddl-auto: none
-      naming: 
+      naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   datasource:
-    url: jdbc:mysql://${host}:${port}/${database}?useUnicode=true&characterEncoding=utf8&useSSL=false&requireSSL=false
-    username: ${username}
-    password: ${password}
+    url: jdbc:mysql://${host:localhost}:${port:3306}/${database:demobd}?useUnicode=true&characterEncoding=utf8&useSSL=false&requireSSL=false
+    username: ${username:root}
+    password: ${password:12345678}
   devtools:
     livereload:
       enabled: true

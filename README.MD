@@ -6,11 +6,7 @@ Despliegue de proyecto en la nube de AWS.
 ## 1.- PROBANDO APIS LOCALMENTE
 **Directorio con docker-compose.yml**
 
-    cd aplicativo/compose-sin-dockerize
-
-ó
-
-    cd aplicativo/compose-con-dockerize
+    cd aplicativo/
 
 **Creando imagenes docker**
 

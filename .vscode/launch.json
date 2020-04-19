@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-App<api-persona-docker>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "mainClass": "taller.ninja.demodocker.App",
+            "projectName": "api-persona-docker",
+            "args": ""
+        }
+    ]
+}

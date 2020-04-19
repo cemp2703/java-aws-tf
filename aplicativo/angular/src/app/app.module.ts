@@ -6,21 +6,24 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material/material.module';
 import { HttpClientModule } from '@angular/common/http';
-import { PreferenciasComponent } from './pages/preferencias/preferencias.component';
-import { PersonasComponent } from './pages/personas/personas.component';
+import { EncuestasComponent } from './pages/encuestas/encuestas.component';
+import { NuevaEncuestaComponent } from './pages/nueva-encuesta/nueva-encuesta.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     AppComponent,
-    PreferenciasComponent,
-    PersonasComponent
+    EncuestasComponent,
+    NuevaEncuestaComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     MaterialModule,
     BrowserAnimationsModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8081
 
 spring:
   jpa:
@@ -11,9 +11,9 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   datasource:
-    url: jdbc:mysql://${host}:${port}/${database}?useUnicode=true&characterEncoding=utf8&useSSL=false&requireSSL=false
-    username: ${username}
-    password: ${password}
+    url: jdbc:mysql://${host:127.0.0.1}:${port:3306}/${database:demobd}?useUnicode=true&characterEncoding=utf8&useSSL=false&requireSSL=false&serverTimezone=UTC
+    username: root
+    password: 
   devtools:
     livereload:
       enabled: true

@@ -21,12 +21,24 @@ public class Persona implements Serializable {
 	
 	@Column(name = "nombre", nullable = false, length = 50)
 	private String nombre;
+
+	@Column(name = "apellidos", nullable = false, length = 50)
+	private String apellidos;
 	
 	@Column(name = "edad", nullable = false, length = 2)
 	private Integer edad;
 
-	@Column(name = "sexo", nullable = false, length = 1)
+	@Column(name = "sexo", nullable = true, length = 1)
 	private String sexo;
+
+	@Column(name = "profesion", nullable = true, length = 20)
+	private String profesion;
+
+	@Column(name = "lugarTrabajo", nullable = true, length = 30)
+	private String lugarTrabajo;
+
+	@Column(name = "lenguajeProgramacion", nullable = true, length = 50)
+	private String lenguajeProgramacion;
 
 	public int getId() {
 		return id;
@@ -44,6 +56,14 @@ public class Persona implements Serializable {
 		this.nombre = nombre;
 	}
 
+	public String getApellidos() {
+		return apellidos;
+	}
+
+	public void setApellidos(String apellidos) {
+		this.apellidos = apellidos;
+	}
+
 	public Integer getEdad(){
 		return this.edad;
 	}
@@ -58,6 +78,30 @@ public class Persona implements Serializable {
 
 	public void setSexo(String sexo){
 		this.sexo = sexo;
+	}
+
+	public String getProfesion(){
+		return this.profesion;
+	}
+
+	public void setProfesion(String profesion){
+		this.profesion = profesion;
+	}
+
+	public String getLugarTrabajo(){
+		return this.lugarTrabajo;
+	}
+
+	public void setLugarTrabajo(String lugarTrabajo){
+		this.lugarTrabajo = lugarTrabajo;
+	}
+
+	public String getLenguajeProgramacion(){
+		return this.lenguajeProgramacion;
+	}
+
+	public void setLenguajeProgramacion(String lenguajeProgramacion){
+		this.lenguajeProgramacion = lenguajeProgramacion;
 	}
 
 }
