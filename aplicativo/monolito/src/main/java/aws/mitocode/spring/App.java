@@ -37,7 +37,7 @@ public class App extends WebMvcConfigurerAdapter{
 	@Bean
 	public AWSCognitoIdentityProviderClient CognitoClient() {        
         AWSCognitoIdentityProviderClient cognitoClient = new AWSCognitoIdentityProviderClient(new DefaultAWSCredentialsProviderChain());
-        cognitoClient.setRegion(Region.getRegion(Regions.US_EAST_2));
+        cognitoClient.setRegion(Region.getRegion(Regions.US_EAST_1));
                 
         return cognitoClient;
 	}

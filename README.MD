@@ -6,7 +6,15 @@ Despliegue de proyecto localmente con autenticación en AWS COGNITO.
 ## 1.- PROBANDO APIS
 
 **Crear grupo de usuario en Cognito**
-Dentro del grupo de usuario crear 2 grupos (ADMIN y USER), cada grupo debe tener minimo 1 usuario creado y asignado.
+
+Se cargará un stack de cloudformation para la creacion de usuarios en cognito.
+
+    cd cloudformation
+
+Archivo: 4-z-cognito.json
+
+Se enviará al correo electronico proporcionado, contraseñas temporales para los usuarios creados (un usuario admin y un usuario comun).
+
 
 **Directorio con docker-compose.yml**
 
@@ -14,10 +22,15 @@ Dentro del grupo de usuario crear 2 grupos (ADMIN y USER), cada grupo debe tener
 
 **Actualizar valores de variables de entorno en archivo docker-compose.yml**
 
-userPoolId: Id de grupo de usuarios de Cognito
-clientId: Id de cliente de aplicación que tendrá acceso al grupo de usuarios de cognito
-AWS_ACCESS_KEY_ID: KEY_ID de IAM para interactuar con la nube de AWS. (Deshabilitar/Eliminar luego de usar)
-AWS_SECRET_ACCESS_KEY: ACCESSS_KEY de IAM para interactuar con la nube de AWS. (Deshabilitar/Eliminar luego de usar)
+userPoolId: Id de grupo de usuarios de Cognito (se obtiene del stack de cloud formation)
+clientId: Id de cliente de aplicación que tendrá acceso al grupo de usuarios de cognito (se obtiene del stack de cloud formation)
+AWS_ACCESS_KEY_ID: KEY_ID de IAM para interactuar con la nube de AWS. (Se crea en la consola AWS - Deshabilitar/Eliminar luego de usar)
+AWS_SECRET_ACCESS_KEY: ACCESSS_KEY de IAM para interactuar con la nube de AWS. (Se crea en la consola AWS - Deshabilitar/Eliminar luego de usar)
+aws_Region_Cognito: Region donde se creó la configuración de usuarios en cognito. 
+
+**Actualizar region de Cognito en Monolito**
+
+Se actualiza la region de cognito en el archivo App.java
 
 **Creando imagenes docker**
 
@@ -79,6 +92,9 @@ https://code.visualstudio.com/docs/?dv=linux64_deb
 
 http://localhost:4200
 
+
+**Iniciar Sesión con los usuarios creados**
+Se pedirá las contraseñas temporales para iniciar sesión por primera vez y solicitará el cambio de clave
 
 
 ## Basado en:

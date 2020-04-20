@@ -26,8 +26,8 @@ services:
     build: ./monolito/
     image: cemp2703/java-aws-tf-monolito
     environment:
-      - userPoolId=us-east-2_3MEonYZnu
-      - clientId=2gsuc6hq13lr093c0mg9isf32c
+      - userPoolId=us-east-1_sm2FOkV3i
+      - clientId=247aa428sfr4loop1el4ltik0v
       - host=mysql_server
       - port=3306
       - database=demobd
@@ -35,7 +35,7 @@ services:
       - password=12345678
       - AWS_ACCESS_KEY_ID=AKIA26USRBXKZDSN43G3
       - AWS_SECRET_ACCESS_KEY=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
-      - aws_Region_Cognito=us-east-2
+      - aws_Region_Cognito=us-east-1
     depends_on:
       - mysql_server
     #Si no especifico un puerto host, se creará uno aleatorio
