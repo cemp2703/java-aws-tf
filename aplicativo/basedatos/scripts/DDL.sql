@@ -11,8 +11,8 @@ CREATE TABLE personas(
     edad INT(2) NULL,
     sexo CHAR NULL,
     profesion VARCHAR(20) NOT NULL,
-    lugarTrabajo VARCHAR(30) NOT NULL,
-    lenguajeProgramacion VARCHAR(50) NOT NULL,
+    lugar_trabajo VARCHAR(30) NOT NULL,
+    lenguaje_programacion VARCHAR(50) NOT NULL,
     INDEX (id),
     PRIMARY KEY (`id`)
 ) ENGINE=INNODB;

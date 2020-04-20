@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { PersonaService } from 'src/app/_service/persona.service';
-import { Persona } from 'src/app/_model/persona';
+import { PersonaService } from 'src/app/_services/persona.service';
 import { MatSnackBar } from '@angular/material';
+import { Persona } from 'src/app/_model/persona';
 
 @Component({
   selector: 'app-nueva-encuesta',

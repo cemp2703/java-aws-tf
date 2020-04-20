@@ -1,24 +1,24 @@
 <form class="example-container" [formGroup]="form" (ngSubmit)="operar()" #encuestaForm="ngForm">
-    <mat-form-field class="example-full-width">
-        <input matInput placeholder="Nombres" formControlName="nombre">
-    </mat-form-field>
-    <mat-form-field class="example-full-width">
-        <input matInput placeholder="Apellidos" formControlName="apellidos">
-    </mat-form-field>
-    <mat-form-field class="example-full-width">
-        <input matInput type="number" placeholder="Edad" formControlName="edad">
-    </mat-form-field>
-    <mat-form-field class="example-full-width">
-        <input matInput placeholder="Profesion" formControlName="profesion">
-    </mat-form-field>
-    <mat-form-field class="example-full-width">
-        <input matInput placeholder="Lugar de Trabajo" formControlName="lugarTrabajo">
-    </mat-form-field>
-    <label id="lenguajeProgramacion">Lenguaje de programación preferido</label>
-    <mat-radio-group aria-labelledby="lenguajeProgramacion" formControlName="lenguajeProgramaciónSeleccionado" name="lenguajeProgramacion">
-        <mat-radio-button name="lenguajeProgramacion" value="Java">Java</mat-radio-button>
-        <mat-radio-button name="lenguajeProgramacion" value="c#">C#</mat-radio-button>
-    </mat-radio-group>
-      
-    <button mat-raised-button color="primary" type="submit" [disabled]="estadoBotonRegistrar()">Enviar Encuesta</button>
+  <mat-form-field class="example-full-width">
+      <input matInput placeholder="Nombres" formControlName="nombre">
+  </mat-form-field>
+  <mat-form-field class="example-full-width">
+      <input matInput placeholder="Apellidos" formControlName="apellidos">
+  </mat-form-field>
+  <mat-form-field class="example-full-width">
+      <input matInput type="number" placeholder="Edad" formControlName="edad">
+  </mat-form-field>
+  <mat-form-field class="example-full-width">
+      <input matInput placeholder="Profesion" formControlName="profesion">
+  </mat-form-field>
+  <mat-form-field class="example-full-width">
+      <input matInput placeholder="Lugar de Trabajo" formControlName="lugarTrabajo">
+  </mat-form-field>
+  <label id="lenguajeProgramacion">Lenguaje de programación preferido</label>
+  <mat-radio-group aria-labelledby="lenguajeProgramacion" formControlName="lenguajeProgramaciónSeleccionado" name="lenguajeProgramacion">
+      <mat-radio-button name="lenguajeProgramacion" value="Java">Java</mat-radio-button>
+      <mat-radio-button name="lenguajeProgramacion" value="c#">C#</mat-radio-button>
+  </mat-radio-group>
+    
+  <button mat-raised-button color="primary" type="submit" [disabled]="estadoBotonRegistrar()">Enviar Encuesta</button>
 </form>

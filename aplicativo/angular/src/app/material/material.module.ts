@@ -1,64 +1,68 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatIconModule, MatSortModule, MatPaginatorModule, MatCardModule, MatSnackBarModule, MatSidenavModule, MatMenuModule, MatToolbarModule, MatDividerModule, MatDialogModule, MatPaginatorIntl, MatCheckboxModule, MatSelectModule, MatDatepickerModule, MatNativeDateModule, MAT_DATE_LOCALE, MatExpansionModule, MatAutocompleteModule, MatStepperModule, MatSlideToggleModule, MatGridListModule, MatProgressBarModule, MatListModule, MatRadioModule } from '@angular/material';
+
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {MatBottomSheetModule,MatButtonModule, MatToolbarModule, MatIconModule, MatSidenavModule, MatMenuModule, 
+  MatDividerModule, MatProgressSpinnerModule, MatCardModule, MatListModule, MatFormFieldModule, 
+  MatTableModule, MatPaginatorModule, MatInputModule, MatDialogModule, MatPaginatorIntl, MatSelectModule, MatSnackBarModule, MatGridListModule, MatProgressBarModule, MatExpansionModule, MatRadioModule}
+from '@angular/material';
+import { MatPaginatorImpl } from '../_shared/mat-paginator';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [],
   imports: [
     CommonModule,
-    MatTableModule,
+    BrowserAnimationsModule,
     MatButtonModule,
-    MatFormFieldModule,
-    MatInputModule,
+    MatToolbarModule,
     MatIconModule,
-    MatSortModule,
-    MatPaginatorModule,
-    MatCardModule,
-    MatSnackBarModule,
     MatSidenavModule,
     MatMenuModule,
-    MatToolbarModule,
     MatDividerModule,
+    MatProgressSpinnerModule,
+    MatCardModule,
+    MatListModule,
+    MatFormFieldModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatInputModule,
     MatDialogModule,
-    MatCheckboxModule,
     MatSelectModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatExpansionModule,
-    MatAutocompleteModule,
-    MatStepperModule,
-    MatSlideToggleModule,
+    ReactiveFormsModule,
+    FormsModule,
+    MatSnackBarModule,
     MatGridListModule,
     MatProgressBarModule,
-    MatListModule,
+    MatExpansionModule,
+    MatBottomSheetModule,
     MatRadioModule
-  ],exports:[
+  ],
+  exports: [
     MatButtonModule,
-    MatTableModule,
-    MatFormFieldModule,
-    MatInputModule,
+    MatToolbarModule,
     MatIconModule,
-    MatSortModule,
-    MatPaginatorModule,
-    MatCardModule,
-    MatSnackBarModule,
     MatSidenavModule,
     MatMenuModule,
-    MatToolbarModule,
     MatDividerModule,
+    MatProgressSpinnerModule,
+    MatCardModule,
+    MatListModule,
+    MatFormFieldModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatInputModule,
     MatDialogModule,
-    MatCheckboxModule,
     MatSelectModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatExpansionModule,
-    MatAutocompleteModule,
-    MatStepperModule,
-    MatSlideToggleModule,
+    ReactiveFormsModule,
+    FormsModule,
+    MatSnackBarModule,
     MatGridListModule,
     MatProgressBarModule,
-    MatListModule,
+    MatExpansionModule,
+    MatBottomSheetModule,
     MatRadioModule
-  ]
+  ],
+  providers : [{ provide : MatPaginatorIntl, useClass: MatPaginatorImpl }],
+  declarations: []
 })
 export class MaterialModule { }

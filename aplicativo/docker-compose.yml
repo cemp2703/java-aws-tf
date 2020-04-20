@@ -4,14 +4,16 @@ services:
 
   mysql_server:
     #Ignorado cuando se usa en modo swarm (swarm usa imágenes de un registry)
-    build: basedatos/
+    build: ./basedatos/
     image: cemp2703/java-aws-tf-bd
     environment:
       - MYSQL_ROOT_PASSWORD=12345678
       - MYSQL_DATABASE=demobd
+      - MYSQL_USER=app
+      - MYSQL_PASSWORD=toor
       - MYSQL_ROOT_HOST=%
     volumes: 
-      - ../basedatos/scripts/:/docker-entrypoint-initdb.d/
+      - ./basedatos/scripts/:/docker-entrypoint-initdb.d/
     ports:
       - "3310:3306"
     #Ignorado cuando se usa en swarm mode (usar restart_policy)
@@ -20,16 +22,20 @@ services:
     networks:
       - backend
 
-  apipersona:
-    build: api-persona/
-    image: cemp2703/java-aws-tf-api_persona
-    environment: 
-      - JAVA_OPTS=""
+  monolito:
+    build: ./monolito/
+    image: cemp2703/java-aws-tf-monolito
+    environment:
+      - userPoolId=us-east-2_3MEonYZnu
+      - clientId=2gsuc6hq13lr093c0mg9isf32c
       - host=mysql_server
       - port=3306
       - database=demobd
       - username=root
       - password=12345678
+      - AWS_ACCESS_KEY_ID=AKIA26USRBXKZDSN43G3
+      - AWS_SECRET_ACCESS_KEY=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
+      - aws_Region_Cognito=us-east-2
     depends_on:
       - mysql_server
     #Si no especifico un puerto host, se creará uno aleatorio
