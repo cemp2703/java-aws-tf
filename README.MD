@@ -15,17 +15,33 @@ Archivo: 4-z-cognito.json
 
 Se enviará al correo electronico proporcionado, contraseñas temporales para los usuarios creados (un usuario admin y un usuario comun).
 
+**Creando politica en IAM**
+    
+    cd cloudformation/IAM
 
-**Directorio con docker-compose.yml**
+Se actualiza el archivo policyCognito.json con el ARN del grupo de usuarios creados anteriormente.
 
-    cd aplicativo/
+Nos dirigimos a IAM en AWS y creamos una politica.
+Se elige la opción JSON y se pega el contenido del json de policyCognito.json
+Se elige un nombre a la politica, se recomienda que el nombre empiece con guion bajo _
+Creamos la politica.
+
+
+**Creando usuario de IAM con los permisos para gestionar Cognito desde fuera de AWS**
+
+ - Se crea un usuario para acceso programatico, por la consola aws.
+ - Se asigna la politica creada anteriormente por consola AWS.
+ - Se copia el AWS_ACCESS_KEY_ID y el AWS_SECRET_ACCESS_KEY del usuario.
+
 
 **Actualizar valores de variables de entorno en archivo docker-compose.yml**
 
+    cd aplicativo/
+
 userPoolId: Id de grupo de usuarios de Cognito (se obtiene del stack de cloud formation)
 clientId: Id de cliente de aplicación que tendrá acceso al grupo de usuarios de cognito (se obtiene del stack de cloud formation)
-AWS_ACCESS_KEY_ID: KEY_ID de IAM para interactuar con la nube de AWS. (Se crea en la consola AWS - Deshabilitar/Eliminar luego de usar)
-AWS_SECRET_ACCESS_KEY: ACCESSS_KEY de IAM para interactuar con la nube de AWS. (Se crea en la consola AWS - Deshabilitar/Eliminar luego de usar)
+AWS_ACCESS_KEY_ID: KEY_ID de usuario IAM creado. (Deshabilitar/Eliminar luego de usar)
+AWS_SECRET_ACCESS_KEY: ACCESSS_KEY de usuario IAM creado. (Deshabilitar/Eliminar luego de usar)
 aws_Region_Cognito: Region donde se creó la configuración de usuarios en cognito. 
 
 **Actualizar region de Cognito en Monolito**

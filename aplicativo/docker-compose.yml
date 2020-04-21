@@ -33,8 +33,8 @@ services:
       - database=demobd
       - username=root
       - password=12345678
-      - AWS_ACCESS_KEY_ID=AKIA26USRBXKZDSN43G3
-      - AWS_SECRET_ACCESS_KEY=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
+      - AWS_ACCESS_KEY_ID=AKIA26USRBXK7PWOBQXA
+      - AWS_SECRET_ACCESS_KEY=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
       - aws_Region_Cognito=us-east-1
     depends_on:
       - mysql_server
