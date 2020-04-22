@@ -113,6 +113,64 @@ http://localhost:4200
 Se pedirá las contraseñas temporales para iniciar sesión por primera vez y solicitará el cambio de clave
 
 
+## 3- Subiendo a la nube
+
+  
+
+**Login en dockerhub**
+
+    docker login
+    
+**Enviando imagenes a dockerhub**
+
+    docker-compose push
+
+**Directorio con CloudFormation (AWS)**
+
+      cd cloudformation
+
+**Cargando stacks de cloudformation en orden:**
+
+ - 1-infraestructura.json
+ - 2-security-groups.json
+ - 3-a-bastion.json
+ - 4-basedatos.json
+
+**Carga de scripts de base de datos en RDS**
+
+Ingresando a carpeta de scripts:
+
+    cd aplicativo/basedatos/scripts
+
+copiando scrips DDL.sql y DML.sql a ec2-bastion
+
+    scp -i "kp_cesar_ohio.pem" DDL.sql ec2-user@ec2-18-221-43-189.us-east-2.compute.amazonaws.com:/tmp
+
+    scp -i "kp_cesar_ohio.pem" DML.sql ec2-user@ec2-18-221-43-189.us-east-2.compute.amazonaws.com:/tmp
+
+Ingresando a bastion
+
+    ssh -i "kp_cesar_ohio.pem" ec2-user@ec2-3-21-207-183.us-east-2.compute.amazonaws.com
+
+Instalando mysql
+
+    sudo yum install mysql -y
+
+Ingresando a base de datos en RDS con el endpoint generado dimanicamente por cloudformation
+
+    mysql -h demobd.c9eaxdedlyrv.us-east-2.rds.amazonaws.com -u root -p
+
+Cargando los scripts en base de datos RDS
+
+    source /tmp/DDL.sql
+    source /tmp/DML.sql
+
+**Cargando stacks de cloudformation en orden:**
+
+ - 6-balanceador.json
+ - 10-ecs.json
+
+
 ## Basado en:
 
 https://github.com/wjma90/taller-docker-swarm

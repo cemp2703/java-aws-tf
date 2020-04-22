@@ -1,0 +1,595 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "ECS + Docker",
+    "Metadata": {},
+    "Parameters": {
+        "keyNamePair": {
+            "Type": "AWS::EC2::KeyPair::KeyName",
+            "Description": "keypair para conexion SSH a instancias EC2 del cluster ECS"
+        },
+        "containerPort": {
+            "Type": "Number",
+            "Description": "puerto de los contenedores (en este curso es comun todos los puertos)",
+            "Default": "8080"
+        },
+        "database": {
+            "Type": "String",
+            "Description": "nombre de la base de datos",
+            "Default": "demobd"
+        },
+        "portBD": {
+            "Type": "String",
+            "Description": "puerto base de datos",
+            "Default": "3306"
+        },
+        "usernameBD": {
+            "Type": "String",
+            "Description": "usuario conexion a base de datos",
+            "Default": "root"
+        },
+        "passwordBD": {
+            "Type": "String",
+            "Description": "password conexion a base de datos",
+            "Default": "12345678"
+        },
+        "capacidadDeseadaECS": {
+            "Type": "String",
+            "Description": "cantidad de EC2 para el cluster ECS",
+            "Default": "4"
+        },
+        "tipoDeInstancia": {
+            "Type": "String",
+            "Description": "Ingresar el tipo de instancia EC2",
+            "Default": "t2.micro"
+        }
+    },
+    "Mappings": {
+        "AWSRegionToAMI": {
+            "us-east-1": {
+                "AMIID": "ami-eca289fb"
+            },
+            "us-east-2": {
+                "AMIID": "ami-446f3521"
+            }
+        }
+    },
+    "Conditions": {},
+    "Resources": {
+        "myClusterECS": {
+            "Type": "AWS::ECS::Cluster"
+        },
+        "ecsAutoScalingGroup": {
+            "Type": "AWS::AutoScaling::AutoScalingGroup",
+            "Properties": {
+                "VPCZoneIdentifier": [
+                    {
+                        "Fn::ImportValue": "infraestructura-subnetPublica1"
+                    },
+                    {
+                        "Fn::ImportValue" : "infraestructura-subnetPublica2"
+                    }
+                ],
+                "LaunchConfigurationName": {
+                    "Ref": "containerInstances"
+                },
+                "MinSize": "0",
+                "MaxSize": "4",
+                "DesiredCapacity": {
+                    "Ref": "capacidadDeseadaECS"
+                }
+            },
+            "CreationPolicy": {
+                "ResourceSignal": {
+                    "Timeout": "PT15M"
+                }
+            },
+            "UpdatePolicy": {
+                "AutoScalingReplacingUpdate": {
+                    "WillReplace": "true"
+                }
+            }
+        },
+        "containerInstances": {
+            "Type": "AWS::AutoScaling::LaunchConfiguration",
+            "Properties": {
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "AWSRegionToAMI",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        "AMIID"
+                    ]
+                },
+                "SecurityGroups": [
+                    {
+                        "Fn::ImportValue": "infraestructura-sgApiECS"
+                    }
+                ],
+                "InstanceType": {
+                    "Ref": "tipoDeInstancia"
+                },
+                "IamInstanceProfile": {
+                    "Ref": "instanceProfileEC2"
+                },
+                "KeyName": {
+                    "Ref": "keyNamePair"
+                },
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/bash -xe\n",
+                                "echo ECS_CLUSTER=",
+                                {
+                                    "Ref": "myClusterECS"
+                                },
+                                " >> /etc/ecs/ecs.config\n",
+                                "yum install -y aws-cfn-bootstrap\n",
+                                "/opt/aws/bin/cfn-signal -e $? ",
+                                "         --stack ",
+                                {
+                                    "Ref": "AWS::StackName"
+                                },
+                                "         --resource ecsAutoScalingGroup ",
+                                "         --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n"
+                            ]
+                        ]
+                    }
+                }
+            }
+        },
+        "instanceProfileEC2": {
+            "Type": "AWS::IAM::InstanceProfile",
+            "Properties": {
+                "Path": "/",
+                "Roles": [
+                    {
+                        "Ref": "ecsRoleEC2"
+                    }
+                ]
+            }
+        },
+        "ecsRoleEC2": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "ec2.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                },
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyName": "ecs-service",
+                        "PolicyDocument": {
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "ecs:CreateCluster",
+                                        "ecs:DeregisterContainerInstance",
+                                        "ecs:DiscoverPollEndpoint",
+                                        "ecs:Poll",
+                                        "ecs:RegisterContainerInstance",
+                                        "ecs:StartTelemetrySession",
+                                        "ecs:Submit*",
+                                        "ecr:GetAuthorizationToken",
+                                        "ecr:BatchCheckLayerAvailability",
+                                        "ecr:GetDownloadUrlForLayer",
+                                        "ecr:BatchGetImage",
+                                        "logs:CreateLogStream",
+                                        "logs:PutLogEvents"
+                                    ],
+                                    "Resource": "*"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "ecsServiceRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "ecs.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                },
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyName": "ecs-service",
+                        "PolicyDocument": {
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "elasticloadbalancing:DeregisterInstancesFromLoadBalancer",
+                                        "elasticloadbalancing:DeregisterTargets",
+                                        "elasticloadbalancing:Describe*",
+                                        "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
+                                        "elasticloadbalancing:RegisterTargets",
+                                        "ec2:Describe*",
+                                        "ec2:AuthorizeSecurityGroupIngress"
+                                    ],
+                                    "Resource": "*"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "apiSeguridadRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "Path": "/",
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "ecs-tasks.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        "apiSeguridadPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": "apiSeguridadPolicy",
+                "Roles": [
+                    {
+                        "Ref": "apiSeguridadRole"
+                    }
+                ],
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "cognito-idp:AdminInitiateAuth",
+                                "cognito-idp:ConfirmForgotPassword",
+                                "cognito-idp:GlobalSignOut",
+                                "cognito-idp:AdminRespondToAuthChallenge",
+                                "cognito-idp:InitiateAuth",
+                                "cognito-idp:AdminGetUser"
+                            ],
+                            "Resource": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "arn:aws:cognito-idp:",
+                                        {
+                                            "Ref": "AWS::Region"
+                                        },
+                                        ":*:userpool/*"
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "cloudwatchLogsGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+                "LogGroupName": {
+                    "Fn::Join": [
+                        "-",
+                        [
+                            "logsGroup",
+                            {
+                                "Ref": "AWS::StackName"
+                            }
+                        ]
+                    ]
+                },
+                "RetentionInDays": 1
+            }
+        },
+        "taskApiSeguridad": {
+            "Type": "AWS::ECS::TaskDefinition",
+            "Properties": {
+                "TaskRoleArn": {
+                    "Ref": "apiSeguridadRole"
+                },
+                "Family": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            {
+                                "Ref": "AWS::StackName"
+                            },
+                            "-apiSeguridad"
+                        ]
+                    ]
+                },
+                "ContainerDefinitions": [
+                    {
+                        "Name": "apiSeguridad",
+                        "Essential": "true",
+                        "Image": "cemp2703/java-aws-tf-monolito",
+                        "MemoryReservation": 500,
+                        "LogConfiguration": {
+                            "LogDriver": "awslogs",
+                            "Options": {
+                                "awslogs-group": {
+                                    "Ref": "cloudwatchLogsGroup"
+                                },
+                                "awslogs-region": {
+                                    "Ref": "AWS::Region"
+                                },
+                                "awslogs-stream-prefix": "apiSeguridad"
+                            }
+                        },
+                        "PortMappings": [
+                            {
+                                "ContainerPort": {
+                                    "Ref": "containerPort"
+                                },
+                                "HostPort": 0
+                            }
+                        ],
+                        "Environment": [
+                            {
+                                "Name": "userPoolId",
+                                "Value": {
+                                    "Fn::ImportValue": "cognito-pool-id"
+                                }
+                            },
+                            {
+                                "Name": "clientId",
+                                "Value": {
+                                    "Fn::ImportValue": "cognito-client-angular"
+                                }
+                            },
+                            {
+                                "Name": "aws_Region_Cognito",
+                                "Value": {
+                                    "Ref": "AWS::Region"
+                                }
+                            },
+                            {
+                                "Name": "host",
+                                "Value": {
+                                    "Fn::ImportValue": "basedatos-endpointRDS"
+                                }
+                            },
+                            {
+                                "Name": "database",
+                                "Value": {
+                                    "Ref": "database"
+                                }
+                            },
+                            {
+                                "Name": "username",
+                                "Value": {
+                                    "Ref": "usernameBD"
+                                }
+                            },
+                            {
+                                "Name": "password",
+                                "Value": {
+                                    "Ref": "passwordBD"
+                                }
+                            },
+                            {
+                                "Name": "port",
+                                "Value": {
+                                    "Ref": "portBD"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "apiSeguridadService": {
+            "Type": "AWS::ECS::Service",
+            "DependsOn": [
+                "ecsAutoScalingGroup"
+            ],
+            "Properties": {
+                "ServiceName": "srvApiSeguridad",
+                "Cluster": {
+                    "Ref": "myClusterECS"
+                },
+                "DesiredCount": "1",
+                "HealthCheckGracePeriodSeconds": 30,
+                "LoadBalancers": [
+                    {
+                        "ContainerName": "apiSeguridad",
+                        "ContainerPort": {
+                            "Ref": "containerPort"
+                        },
+                        "TargetGroupArn": {
+                            "Ref": "tgApiSeguridad"
+                        }
+                    }
+                ],
+                "Role": {
+                    "Ref": "ecsServiceRole"
+                },
+                "TaskDefinition": {
+                    "Ref": "taskApiSeguridad"
+                }
+            }
+        },
+        "tgApiSeguridad": {
+            "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+            "Properties": {
+                "HealthCheckIntervalSeconds": 10,
+                "HealthCheckPath": "/status/verificar",
+                "HealthCheckProtocol": "HTTP",
+                "Matcher": {
+                    "HttpCode": "200-204"
+                },
+                "HealthCheckTimeoutSeconds": 5,
+                "HealthyThresholdCount": 2,
+                "Name": "tgApiSeguridad",
+                "Port": {
+                    "Ref": "containerPort"
+                },
+                "Protocol": "HTTP",
+                "UnhealthyThresholdCount": 2,
+                "VpcId": {
+                    "Fn::ImportValue": "infraestructura-idVPC"
+                }
+            }
+        },
+        "ecsAlbListenerRuleApiSeguridad": {
+            "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+            "DependsOn": "tgApiSeguridad",
+            "Properties": {
+                "Actions": [
+                    {
+                        "Type": "forward",
+                        "TargetGroupArn": {
+                            "Ref": "tgApiSeguridad"
+                        }
+                    }
+                ],
+                "Conditions": [
+                    {
+                        "Field": "path-pattern",
+                        "Values": [
+                            "/*"
+                        ]
+                    }
+                ],
+                "ListenerArn": {
+                    "Fn::ImportValue": "infraestructura-arnListenerHttpMyBalancer"
+                },
+                "Priority": 1
+            }
+        },
+        "myAutoscalingRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "application-autoscaling.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                },
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyName": "service-autoscaling",
+                        "PolicyDocument": {
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "application-autoscaling:*",
+                                        "cloudwatch:DescribeAlarms",
+                                        "cloudwatch:PutMetricAlarm",
+                                        "ecs:DescribeServices",
+                                        "ecs:UpdateService"
+                                    ],
+                                    "Resource": "*"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "myScalingTargetApiSeguridad": {
+            "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
+            "DependsOn": [
+                "apiSeguridadService"
+            ],
+            "Properties": {
+                "MaxCapacity": 3,
+                "MinCapacity": 1,
+                "ResourceId": {
+                    "Fn::Join":[
+                        "",
+                        [
+                          "service/",
+                          {
+                            "Ref":"myClusterECS"
+                          },
+                          "/srvApiSeguridad"
+                        ]
+                      ]
+                },
+                "RoleARN": {
+                    "Fn::GetAtt": [
+                        "myAutoscalingRole",
+                        "Arn"
+                    ]
+                },
+                "ScalableDimension": "ecs:service:DesiredCount",
+                "ServiceNamespace": "ecs"
+            }
+        },
+        "myScalingPolicyApiSeguridad": {
+            "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+            "Properties": {
+                "PolicyName": "AStepPolicyApiSeguridad",
+                "PolicyType": "TargetTrackingScaling",
+                "ScalingTargetId": {
+                    "Ref": "myScalingTargetApiSeguridad"
+                },
+                "TargetTrackingScalingPolicyConfiguration": {
+                    "TargetValue": 85,
+                    "ScaleInCooldown": 120,
+                    "ScaleOutCooldown": 120,
+                    "PredefinedMetricSpecification": {
+                        "PredefinedMetricType": "ECSServiceAverageMemoryUtilization"
+                    }
+                }
+            }
+        }
+    },
+    "Outputs": {}
+}
