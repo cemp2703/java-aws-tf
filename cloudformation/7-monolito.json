@@ -145,7 +145,7 @@
                     {
                         "Field": "path-pattern",
                         "Values": [
-                            "/api/personas/*"
+                            "/*"
                         ]
                     }
                 ],

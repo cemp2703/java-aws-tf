@@ -6,8 +6,8 @@ services:
     #build: ./monolito/
     image: cemp2703/java-aws-tf-monolito
     environment: 
-      - userPoolId=us-east-1_sm2FOkV3i
-      - clientId=247aa428sfr4loop1el4ltik0v
+      - userPoolId=us-east-1_wnjnzVEZd
+      - clientId=65aqujos1rradpgh0et9o0ap5r
       - host=${host}
       - port=3306
       - database=demobd
