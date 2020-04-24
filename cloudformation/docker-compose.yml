@@ -1,0 +1,23 @@
+version: '3.4'
+
+services:
+
+  monolito:
+    #build: ./monolito/
+    image: cemp2703/java-aws-tf-monolito
+    environment: 
+      - userPoolId=us-east-1_sm2FOkV3i
+      - clientId=247aa428sfr4loop1el4ltik0v
+      - host=${host}
+      - port=3306
+      - database=demobd
+      - username=root
+      - password=12345678
+      - AWS_ACCESS_KEY_ID=AKIA26USRBXK7PWOBQXA
+      - AWS_SECRET_ACCESS_KEY=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
+      - aws_Region_Cognito=us-east-1
+    #Si no especifico un puerto host, se creará uno aleatorio
+    network_mode: host
+    restart: on-failure
+    #Sobreescribiendo el entrypoint del dockerfile
+    entrypoint: java -jar /workspace/app.jar

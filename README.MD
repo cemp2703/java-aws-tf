@@ -138,15 +138,17 @@ Se pedirá las contraseñas temporales para iniciar sesión por primera vez y so
 
 **Carga de scripts de base de datos en RDS**
 
-Ingresando a carpeta de scripts:
+En una carpeta con los siguientes:
 
     cd aplicativo/basedatos/scripts
 
+Se necesitará tener una llave .pem de la region en dicha carpeta.
+
 copiando scrips DDL.sql y DML.sql a ec2-bastion
 
-    scp -i "kp_cesar_ohio.pem" DDL.sql ec2-user@ec2-18-221-43-189.us-east-2.compute.amazonaws.com:/tmp
+    scp -i "kp_cesar_virginia.pem" DDL.sql ec2-user@ec2-34-227-103-11.compute-1.amazonaws.com:/tmp
 
-    scp -i "kp_cesar_ohio.pem" DML.sql ec2-user@ec2-18-221-43-189.us-east-2.compute.amazonaws.com:/tmp
+    scp -i "kp_cesar_virginia.pem" DML.sql ec2-user@ec2-34-227-103-11.compute-1.amazonaws.com:/tmp
 
 Ingresando a bastion
 
@@ -168,7 +170,7 @@ Cargando los scripts en base de datos RDS
 **Cargando stacks de cloudformation en orden:**
 
  - 6-balanceador.json
- - 10-ecs.json
+ - 7-monolito.json
 
 
 ## Basado en:

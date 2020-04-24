@@ -1,0 +1,165 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Apis",
+    "Metadata": {},
+    "Parameters": {
+        "KeyPairName": {
+            "Type": "AWS::EC2::KeyPair::KeyName",
+            "Description": "Archivo para conexion a EC2",
+            "ConstraintDescription": "Debe existir previamente un archivo keypair"
+        },
+        "tipoDeInstancia" : {
+            "Type" : "String",
+            "Default" : "t2.micro"
+        },
+        "capacidadDeseada": {
+            "Type": "String",
+            "Default": "2"
+        }
+    },
+    "Mappings": {
+        "AWSRegionToAMI": {
+            "us-east-1": {
+                "AMIID": "ami-0080e4c5bc078760e",
+                "AzUnique": "us-east-1a"
+            },
+            "us-east-2": {
+                "AMIID": "ami-0d542ef84ec55d71c",
+                "AzUnique": "us-east-2a"
+            }
+        }
+    },
+    "Conditions": {},
+    "Resources": {
+        "monolitoTargetGroup": {
+            "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+            "Properties": {
+                "HealthCheckIntervalSeconds": 30,
+                "HealthCheckProtocol": "HTTP",
+                "HealthCheckPath": "/status/verificar",
+                "HealthCheckTimeoutSeconds": 10,
+                "HealthyThresholdCount": 3,
+                "Matcher": {
+                    "HttpCode": "200-204"
+                },
+                "Name": "tgMonolito",
+                "Port": 8080,
+                "Protocol": "HTTP",
+                "TargetGroupAttributes": [
+                    {
+                        "Key": "deregistration_delay.timeout_seconds",
+                        "Value": "30"
+                    }
+                ],
+                "Targets": [],
+                "UnhealthyThresholdCount": 3,
+                "VpcId": {
+                    "Fn::ImportValue": "infraestructura-idVPC"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "tgMonolito"
+                    }
+                ]
+            }
+        },
+        "MonolitoLaunchConfiguration": {
+            "Type": "AWS::AutoScaling::LaunchConfiguration",
+            "Properties": {
+                "KeyName": {
+                    "Ref": "KeyPairName"
+                },
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "AWSRegionToAMI",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        "AMIID"
+                    ]
+                },
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/bash -xe \n",
+                                "echo 'host=",{ "Fn::ImportValue": "basedatos-endpointRDS" },"' >> .env \n",
+                                "yum update -y \n",
+                                "yum remove java-1.7.0-openjdk -y \n",
+                                "yum install -y docker \n",
+                                "chkconfig docker on \n",
+                                "curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/bin/docker-compose \n",
+                                "chmod +x /usr/bin/docker-compose \n",
+                                "service docker start \n",
+                                "usermod -a -G docker ec2-user \n",
+                                "wget https://raw.githubusercontent.com/cemp2703/java-aws-tf/master/cloudformation/docker-compose.yml \n",
+                                "docker-compose up -d monolito"
+                            ]
+                        ]
+                    }
+                },
+                "SecurityGroups": [
+                    { "Fn::ImportValue": "infraestructura-sgMonolito" }
+                ],
+                "InstanceType": { "Ref": "tipoDeInstancia" }
+            }
+        },
+        "autoScalingMonolito": {
+            "Type": "AWS::AutoScaling::AutoScalingGroup",
+            "Properties": {
+                "VPCZoneIdentifier": [
+                    {
+                       "Fn::ImportValue" : "infraestructura-subnetPublica1"
+                    },
+                    {
+                        "Fn::ImportValue" : "infraestructura-subnetPublica2"
+                    }
+                ],
+                "LaunchConfigurationName": {
+                    "Ref": "MonolitoLaunchConfiguration"
+                },
+                "MinSize": "0",
+                "DesiredCapacity": { "Ref" : "capacidadDeseada" },
+                "MaxSize": "10",
+                "TargetGroupARNs": [
+                    {
+                        "Ref": "monolitoTargetGroup"
+                    }
+                ]
+            }
+        },
+        "monolitoAlbListenerRule": {
+            "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+            "Properties": {
+                "Actions": [
+                    {
+                        "Type": "forward",
+                        "TargetGroupArn": {
+                            "Ref": "monolitoTargetGroup"
+                        }
+                    }
+                ],
+                "Conditions": [
+                    {
+                        "Field": "path-pattern",
+                        "Values": [
+                            "/api/personas/*"
+                        ]
+                    }
+                ],
+                "ListenerArn": { "Fn::ImportValue": "infraestructura-arnListenerHttpMyBalancer" },
+                "Priority": 10
+            }
+        }
+    },
+    "Outputs": {
+        "monolitoTargetGroup": {
+            "Description": "grupo de destino - monolito",
+            "Value": {
+                "Ref": "monolitoTargetGroup"
+            }
+        }
+    }
+}
