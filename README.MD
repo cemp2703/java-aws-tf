@@ -22,6 +22,7 @@ Se enviará al correo electronico proporcionado, contraseñas temporales para lo
 Se actualiza el archivo policyCognito.json con el ARN del grupo de usuarios creados anteriormente.
 
 Nos dirigimos a IAM en AWS y creamos una politica.
+Actualizamos el ARN del pool de usuarios creados en cognito en el archivo policyCognito.json: 
 Se elige la opción JSON y se pega el contenido del json de policyCognito.json
 Se elige un nombre a la politica, se recomienda que el nombre empiece con guion bajo _
 Creamos la politica.
@@ -167,11 +168,33 @@ Cargando los scripts en base de datos RDS
     source /tmp/DDL.sql
     source /tmp/DML.sql
 
+**Actualizando valores de docker-compose.yml (7-monolito)**
+
+Se actualizan los parametros de cognito que se generaron automaticamente.
+Se realiza un commit y un push al repositorio remoto desde donde se descargará el archivo docker-compose.yml
+
 **Cargando stacks de cloudformation en orden:**
 
  - 6-balanceador.json
  - 7-monolito.json
 
+ ## 4 - Probando localmente frontend con backend en la nube.
+
+ Ingresar al correo electronico al que se envió los password provicionales para los usuarios en cognito, solicitará cambiar contraseña a primera vez.
+
+ cd aplicativo/angular/src/app/_shared/constants.ts
+
+ Actualizar la variable HOST_BACKEND  para que apunte a la url del balanceador.
+
+    export const HOST_BACKEND =`http://mybalancercf-1830245007.us-east-1.elb.amazonaws.com`
+
+Dirigirse a la raiz del proyecto angular
+
+    cd aplicativo/angular
+
+Iniciar proyecto angular
+
+    ng s
 
 ## Basado en:
 

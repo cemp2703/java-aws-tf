@@ -12,7 +12,7 @@
                 "cognito-idp:InitiateAuth"
             ],
             "Resource": [
-                "arn:aws:cognito-idp:us-east-1:753000320469:userpool/us-east-1_sm2FOkV3i"
+                "arn:aws:cognito-idp:us-east-1:753000320469:userpool/us-east-1_wnjnzVEZd"
             ]
         }
     ]
