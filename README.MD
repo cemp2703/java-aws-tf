@@ -178,24 +178,102 @@ Se realiza un commit y un push al repositorio remoto desde donde se descargará 
  - 6-balanceador.json
  - 7-monolito.json
 
- ## 4 - Probando localmente frontend con backend en la nube.
+ ## 4- Frontend local con Balanceador en la nube.
 
- Ingresar al correo electronico al que se envió los password provicionales para los usuarios en cognito, solicitará cambiar contraseña a primera vez.
+ **Ingresar al correo electronico al que se envió los password provicionales para los usuarios en cognito, solicitará cambiar contraseña a primera vez**
 
- cd aplicativo/angular/src/app/_shared/constants.ts
+ **Probando url de balanceador**
 
- Actualizar la variable HOST_BACKEND  para que apunte a la url del balanceador.
+     curl -i -X POST -H 'Content-type: application/json' -d '{"username": "admin","password":"12345678"}' http://mybalancercf-1830245007.us-east-1.elb.amazonaws.com/api/security/login
+
+Se obtendrá una respuesta exitosa.
+
+    HTTP/1.1 200 OK
+    ...
+
+ **Actualizar la variable HOST_BACKEND  para que apunte a la url del balanceador**
+
+    cd aplicativo/angular/src/app/_shared/constants.ts
 
     export const HOST_BACKEND =`http://mybalancercf-1830245007.us-east-1.elb.amazonaws.com`
 
-Dirigirse a la raiz del proyecto angular
+**Iniciar proyecto angular**
 
     cd aplicativo/angular
 
-Iniciar proyecto angular
+    ng s
+
+## 5-Frontend local con APIGateway.
+
+Crear API REST en AWS API Gateway importando el json de swagger con contenido de AWS ubicado en
+
+    cd aplicativo/cloudformation
+
+archivo: "RestApi Encuestas-prod-swagger-apigateway.json"
+
+Acciones > Implementar API
+
+Crear nueva etapa: prod
+
+Se obtendrá una url de apigateway parecida a la siguiente:
+
+    https://rk983uneh1.execute-api.us-east-1.amazonaws.com/prod
+
+**Probando API con Curl**
+
+    curl -i -X POST -H 'Content-type: application/json' -d '{"username": "admin","password":"12345678"}' https://rk983uneh1.execute-api.us-east-1.amazonaws.com/prod/api/security/login
+
+Se obtendrá un response exitoso:
+
+    HTTP/1.1 200 OK
+    ...
+
+**Probando localmente frontend con API en la nube**
+
+    cd aplicativo/angular
 
     ng s
 
-## Basado en:
+## 6- Subiendo Frontend a la nube (s3 + Cloudfront)
+
+**Generando compilado del proyecto angular para despligue**
+
+    cd aplicativo/angular
+
+    ng build --prod
+
+Se genera el directorio:
+    aplicativo/angular/dist/service-bank-app
+
+**Cargar stack de cloudformation (consola AWS) para creación de bucket de s3 y distribición de cloudfront**
+
+    archivo: 9-cloudfront.json
+
+Ingresar a S3 (consola AWS) al bucket creado qe debe tener un nombre como:
+
+    couldformation-s3-mys3frontendangular-12u5awkox35ko
+
+**Cargar los archivos generados de angular de la carpeta service-bank-app al bucket de s3**
+
+Opcion Cargar, arrastrar los archivos a la ventana. Dar en siguiente
+
+Establecer permmisos.
+Administrar servicios publicos > Conceder acceso de lectura publica a estos objetos. Siguiente.
+
+Establecer prioridad. Estandar.Siguiente y cargar.
+
+**Ingresar a cloudfront (consola aws)**
+
+Seleccionar la distribución que tiene como origen (origin) el bucket anterior.
+Fijarse que esté en estado Enabled, sino en todo caso habilitarlo.
+
+Ingresar a la distribución, en la pestaña general se visualizará la url de la distribución (Domain Name) del tipo:
+
+    d1avzlnzxanret.cloudfront.net
+
+
+
+## Fuentes:
 
 https://github.com/wjma90/taller-docker-swarm
+https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html
