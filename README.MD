@@ -1,9 +1,8 @@
 
 # Proyecto Angular/Java Spring - Dockerizado y Despliegue en nube AWS (VPC,SG,RDS,ECS / EC2-Docker,ALB,S3,Cloudfront,Cognito,IAM).
 
-Despliegue de proyecto localmente con autenticación en AWS COGNITO.
 
-## 1.- PROBANDO APIS
+## 1.- Probando backend localmente
 
 **Crear grupo de usuario en Cognito**
 
@@ -71,7 +70,7 @@ http://localhost:8081/status/verificar
 http://localhost:8081/v2/api-docs
 
  
-## 2.- Iniciando proyecto angular
+## 2.- Iniciando proyecto angular (frontend)
 
 
 ### Requiere:
@@ -114,7 +113,7 @@ http://localhost:4200
 Se pedirá las contraseñas temporales para iniciar sesión por primera vez y solicitará el cambio de clave
 
 
-## 3- Subiendo a la nube
+## 3.- Subiendo backend a la nube aws
 
   
 
@@ -168,7 +167,7 @@ Cargando los scripts en base de datos RDS
     source /tmp/DDL.sql
     source /tmp/DML.sql
 
-**Actualizando valores de docker-compose.yml (7-monolito)**
+**Actualizando valores de docker-compose.yml**
 
 Se actualizan los parametros de cognito que se generaron automaticamente.
 Se realiza un commit y un push al repositorio remoto desde donde se descargará el archivo docker-compose.yml
@@ -181,7 +180,6 @@ Se realiza un commit y un push al repositorio remoto desde donde se descargará 
  NOTA:
  Como alternativa al archivo 10.-ecs.json para levantar el backend se puede correr el archivo 7-monolito.json. La diferencia es que se dejaria de usar ecs por ec2 con docker instalado.
 
- ## 4- Frontend local con Balanceador en la nube.
 
  **Ingresar al correo electronico al que se envió los password provicionales para los usuarios en cognito, solicitará cambiar contraseña a primera vez**
 
@@ -206,7 +204,7 @@ Se obtendrá una respuesta exitosa.
 
     ng s
 
-## 5-Frontend local con APIGateway.
+## 4.-Se agrega APIGateway.
 
 Crear API REST en AWS API Gateway importando el json de swagger con contenido de AWS ubicado en
 
@@ -237,7 +235,7 @@ Se obtendrá un response exitoso:
 
     ng s
 
-## 6- Subiendo Frontend a la nube (s3 + Cloudfront)
+## 5.- Subiendo Frontend a la nube (s3 + Cloudfront)
 
 **Generando compilado del proyecto angular para despligue**
 
@@ -286,5 +284,5 @@ Ingresar a la distribución, en la pestaña general se visualizará la url de la
 
 ## Fuentes:
 
-https://github.com/wjma90/taller-docker-swarm
-https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html
+- https://github.com/wjma90/taller-docker-swarm
+- https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html
