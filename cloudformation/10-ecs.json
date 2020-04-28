@@ -347,7 +347,7 @@
                         "Name": "apiSeguridad",
                         "Essential": "true",
                         "Image": "cemp2703/java-aws-tf-monolito",
-                        "MemoryReservation": 500,
+                        "MemoryReservation": 374,
                         "LogConfiguration": {
                             "LogDriver": "awslogs",
                             "Options": {
@@ -394,6 +394,12 @@
                                 }
                             },
                             {
+                                "Name": "port",
+                                "Value": {
+                                    "Ref": "portBD"
+                                }
+                            },
+                            {
                                 "Name": "database",
                                 "Value": {
                                     "Ref": "database"
@@ -409,12 +415,6 @@
                                 "Name": "password",
                                 "Value": {
                                     "Ref": "passwordBD"
-                                }
-                            },
-                            {
-                                "Name": "port",
-                                "Value": {
-                                    "Ref": "portBD"
                                 }
                             }
                         ]

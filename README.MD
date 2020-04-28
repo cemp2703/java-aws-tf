@@ -176,7 +176,10 @@ Se realiza un commit y un push al repositorio remoto desde donde se descargará 
 **Cargando stacks de cloudformation en orden:**
 
  - 6-balanceador.json
- - 7-monolito.json
+ - 10-ecs.json
+
+ NOTA:
+ Como alternativa al archivo 10.-ecs.json para levantar el backend se puede correr el archivo 7-monolito.json. La diferencia es que se dejaria de usar ecs por ec2 con docker instalado.
 
  ## 4- Frontend local con Balanceador en la nube.
 
@@ -249,9 +252,16 @@ Se genera el directorio:
 
     archivo: 9-cloudfront.json
 
+subiendo: cloudfront y s3
+
+**Configuración de bucket s3**
+
 Ingresar a S3 (consola AWS) al bucket creado qe debe tener un nombre como:
 
     couldformation-s3-mys3frontendangular-12u5awkox35ko
+
+Propiedades del bucket creado > Alojamiento de sitios webs estaticos > Usar este bucker para alojat un sitio web. 
+Generará una web con protocolo http
 
 **Cargar los archivos generados de angular de la carpeta service-bank-app al bucket de s3**
 
@@ -261,6 +271,7 @@ Establecer permmisos.
 Administrar servicios publicos > Conceder acceso de lectura publica a estos objetos. Siguiente.
 
 Establecer prioridad. Estandar.Siguiente y cargar.
+
 
 **Ingresar a cloudfront (consola aws)**
 
