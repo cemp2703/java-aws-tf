@@ -1,5 +1,5 @@
 
-# Proyecto Angular/Java Spring - Docker / AWS (VPC,SG,RDS,EC2-Docker,ALB).
+# Proyecto Angular/Java Spring - Dockerizado y Despliegue en nube AWS (VPC,SG,RDS,ECS / EC2-Docker,ALB,S3,Cloudfront,Cognito,IAM).
 
 Despliegue de proyecto localmente con autenticación en AWS COGNITO.
 
